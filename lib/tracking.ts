@@ -4,6 +4,10 @@ import crypto from 'crypto'
 export async function generateTrackingToken(tripId: string): Promise<string> {
   const supabase = await createClient()
   
+  if (!supabase) {
+    throw new Error('Supabase no configurado')
+  }
+  
   // Generate a secure random token
   const token = crypto.randomBytes(32).toString('hex')
   

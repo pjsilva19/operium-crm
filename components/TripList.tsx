@@ -8,6 +8,20 @@ export default async function TripList() {
   const supabase = await createClient()
   const profile = await getProfile()
 
+  // If Supabase is not configured, return empty list
+  if (!supabase) {
+    return (
+      <div className="bg-[#1E293B] rounded-2xl border border-gray-800 overflow-hidden">
+        <div className="p-4 border-b border-gray-800">
+          <h2 className="text-lg font-semibold text-white">Viajes Recientes</h2>
+        </div>
+        <div className="p-8 text-center text-gray-400">
+          <p>Configuración incompleta</p>
+        </div>
+      </div>
+    )
+  }
+
   let query = supabase
     .from('viajes')
     .select('*, clientes(nombre_comercial, razon_social)')

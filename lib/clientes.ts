@@ -9,6 +9,10 @@ export async function approveCliente(id: string, profile: Profile) {
 
   const supabase = await createClient()
 
+  if (!supabase) {
+    throw new Error('Supabase no configurado')
+  }
+
   const { data: updatedCliente, error } = await supabase
     .from('clientes')
     .update({

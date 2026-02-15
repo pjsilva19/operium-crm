@@ -4,6 +4,11 @@ import type { Viaje, Profile, Cliente, Transportista } from './supabase/types'
 export async function getViajes(profile: Profile) {
   const supabase = await createClient()
 
+  // If Supabase is not configured, return empty array
+  if (!supabase) {
+    return []
+  }
+
   try {
     let query = supabase
       .from('viajes')
@@ -46,6 +51,10 @@ export async function getViajes(profile: Profile) {
 export async function getViajeById(id: string, profile: Profile): Promise<Viaje | null> {
   const supabase = await createClient()
 
+  if (!supabase) {
+    return null
+  }
+
   const { data, error } = await supabase
     .from('viajes')
     .select('*')
@@ -75,6 +84,10 @@ export async function createViaje(
   profile: Profile
 ) {
   const supabase = await createClient()
+
+  if (!supabase) {
+    throw new Error('Supabase no configurado')
+  }
 
   // Asignar sucursal_id automáticamente si no es master
   let sucursalId = data.sucursal_id
@@ -107,6 +120,10 @@ export async function updateViaje(
 ) {
   const supabase = await createClient()
 
+  if (!supabase) {
+    throw new Error('Supabase no configurado')
+  }
+
   // Verificar acceso
   const viaje = await getViajeById(id, profile)
   if (!viaje) {
@@ -133,6 +150,10 @@ export async function updateViaje(
 
 export async function deleteViaje(id: string, profile: Profile) {
   const supabase = await createClient()
+
+  if (!supabase) {
+    throw new Error('Supabase no configurado')
+  }
 
   // Verificar acceso
   const viaje = await getViajeById(id, profile)
@@ -172,6 +193,10 @@ export async function deleteViaje(id: string, profile: Profile) {
 export async function getClientesForSelect(profile: Profile): Promise<Cliente[]> {
   const supabase = await createClient()
 
+  if (!supabase) {
+    return []
+  }
+
   let query = supabase
     .from('clientes')
     .select('id, nombre_comercial, razon_social')
@@ -195,6 +220,10 @@ export async function getClientesForSelect(profile: Profile): Promise<Cliente[]>
 
 export async function getTransportistasForSelect(profile: Profile): Promise<Transportista[]> {
   const supabase = await createClient()
+
+  if (!supabase) {
+    return []
+  }
 
   let query = supabase
     .from('transportistas')

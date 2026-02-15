@@ -5,6 +5,9 @@ import type { Profile } from './supabase/types'
 export async function getSession() {
   try {
     const supabase = await createClient()
+    if (!supabase) {
+      return null
+    }
     const { data: { session } } = await supabase.auth.getSession()
     return session
   } catch (error) {
@@ -18,6 +21,9 @@ export async function getSession() {
 export async function getUser() {
   try {
     const supabase = await createClient()
+    if (!supabase) {
+      return null
+    }
     const { data: { user } } = await supabase.auth.getUser()
     return user
   } catch (error) {
@@ -30,6 +36,9 @@ export async function getUser() {
 export async function getProfile(): Promise<Profile | null> {
   try {
     const supabase = await createClient()
+    if (!supabase) {
+      return null
+    }
     const user = await getUser()
     
     if (!user) return null
@@ -63,6 +72,10 @@ export async function requireApprovedUser() {
   if (!profile) {
     // Create profile if it doesn't exist
     const supabase = await createClient()
+    if (!supabase) {
+      // If Supabase is not configured, redirect to login
+      redirect('/login')
+    }
     const user = await getUser()
     if (user) {
       const { error } = await supabase

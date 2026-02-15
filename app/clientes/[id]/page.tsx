@@ -1,6 +1,6 @@
 import { requireApprovedUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { formatDate, formatDateTime } from '@/lib/utils'
 import type { Cliente } from '@/lib/supabase/types'
@@ -10,6 +10,10 @@ export const dynamic = 'force-dynamic'
 export default async function ClienteDetailPage({ params }: { params: { id: string } }) {
   const { profile } = await requireApprovedUser()
   const supabase = await createClient()
+
+  if (!supabase) {
+    redirect('/login')
+  }
 
   const { data: cliente } = await supabase
     .from('clientes')

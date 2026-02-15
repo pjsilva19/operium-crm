@@ -3,6 +3,11 @@ import { createClient } from './supabase/server'
 export async function getPendientesCount() {
   const supabase = await createClient()
 
+  // If Supabase is not configured, return 0
+  if (!supabase) {
+    return 0
+  }
+
   try {
     // Contar clientes pendientes
     const { count: clientesCount } = await supabase

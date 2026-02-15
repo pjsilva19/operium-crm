@@ -7,6 +7,16 @@ export async function getKpis(sucursalId?: string | null) {
   const supabase = await createClient()
   const profile = await getProfile()
 
+  // If Supabase is not configured, return empty KPIs
+  if (!supabase) {
+    return {
+      viajesActivos: 0,
+      viajesHoy: 0,
+      enRuta: 0,
+      entregadosHoy: 0,
+    }
+  }
+
   // Build query based on user role
   let query = supabase.from('viajes').select('*').eq('is_deleted', false)
 

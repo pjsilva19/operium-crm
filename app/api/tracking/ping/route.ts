@@ -24,6 +24,10 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
+    if (!supabase) {
+      return NextResponse.json({ error: 'Supabase no configurado' }, { status: 500 })
+    }
+
     // Insertar ubicación
     const { data, error } = await supabase
       .from('driver_locations')

@@ -1,5 +1,6 @@
 import { requireMaster } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import { formatDate } from '@/lib/utils'
 import type { Profile, Sucursal } from '@/lib/supabase/types'
 import UserManagement from '@/components/UserManagement'
@@ -9,6 +10,10 @@ export const dynamic = 'force-dynamic'
 export default async function UsuariosPage() {
   await requireMaster()
   const supabase = await createClient()
+
+  if (!supabase) {
+    redirect('/login')
+  }
 
   const { data: profiles } = await supabase
     .from('profiles')

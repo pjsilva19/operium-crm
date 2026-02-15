@@ -1,5 +1,6 @@
 import { requireMaster } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import type { Cliente, Transportista } from '@/lib/supabase/types'
 import AprobacionesContent from '@/components/AprobacionesContent'
 
@@ -8,6 +9,10 @@ export const dynamic = 'force-dynamic'
 export default async function AprobacionesPage() {
   await requireMaster()
   const supabase = await createClient()
+
+  if (!supabase) {
+    redirect('/login')
+  }
 
   // Obtener clientes pendientes
   const { data: clientesPendientes } = await supabase

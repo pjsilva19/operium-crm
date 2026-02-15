@@ -12,6 +12,10 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient()
 
+    if (!supabase) {
+      return NextResponse.json({ error: 'Supabase no configurado' }, { status: 500 })
+    }
+
     // Obtener todas las ubicaciones ordenadas por fecha (más recientes primero)
     const { data: allLocations, error: fetchError } = await supabase
       .from('driver_locations')

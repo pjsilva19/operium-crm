@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
 // Force dynamic rendering to avoid build-time errors
 export const dynamic = 'force-dynamic'
@@ -7,6 +8,10 @@ export const dynamic = 'force-dynamic'
 export default async function CheckProfilePage() {
   const session = await requireAuth()
   const supabase = await createClient()
+
+  if (!supabase) {
+    redirect('/login')
+  }
 
   const { data: profile } = await supabase
     .from('profiles')

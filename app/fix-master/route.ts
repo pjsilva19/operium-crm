@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
   const supabase = await createClient()
+  if (!supabase) {
+    return NextResponse.json({ error: 'Supabase no configurado' }, { status: 500 })
+  }
   const { data: { user } } = await supabase.auth.getUser()
   
   if (!user) {

@@ -8,6 +8,9 @@ export async function GET() {
     const supabase = await createClient()
 
     // Get all sucursales (no RLS on sucursales table)
+    if (!supabase) {
+      return NextResponse.json({ error: 'Supabase no configurado' }, { status: 500 })
+    }
     const { data: sucursales, error } = await supabase
       .from('sucursales')
       .select('*')

@@ -1,13 +1,19 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { getSupabaseEnv } from './env'
 
 export async function createClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+
+  // Guard: Validate environment variables
+  // Return null if missing or invalid (must start with https://)
+  if (!url || !key || !/^https:\/\/.+/.test(url)) {
+    console.warn('Supabase client not created: Missing or invalid environment variables')
+    return null
+  }
+
   try {
     const cookieStore = await cookies()
-
-    // Validate environment variables
-    const { url, key } = getSupabaseEnv()
 
     return createServerClient(url, key, {
       cookies: {
@@ -28,7 +34,8 @@ export async function createClient() {
       },
     })
   } catch (error: any) {
-    // If env vars are missing or invalid, throw a more descriptive error
-    throw new Error(`Failed to create Supabase client: ${error.message}`)
+    // If client creation fails, return null for graceful handling
+    console.error('Failed to create Supabase client:', error.message)
+    return null
   }
 }

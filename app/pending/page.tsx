@@ -9,6 +9,10 @@ export default async function PendingPage() {
   const session = await requireAuth()
   const supabase = await createClient()
 
+  if (!supabase) {
+    redirect('/login')
+  }
+
   let { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('approved, rol, nombre, email')

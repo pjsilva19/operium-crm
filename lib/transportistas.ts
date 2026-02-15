@@ -4,6 +4,11 @@ import type { Transportista, Profile, Sucursal } from './supabase/types'
 export async function getTransportistas(profile: Profile) {
   const supabase = await createClient()
 
+  // If Supabase is not configured, return empty array
+  if (!supabase) {
+    return []
+  }
+
   try {
     let query = supabase
       .from('transportistas')
@@ -56,6 +61,10 @@ export async function getTransportistas(profile: Profile) {
 export async function getTransportistaById(id: string, profile: Profile): Promise<Transportista | null> {
   const supabase = await createClient()
 
+  if (!supabase) {
+    return null
+  }
+
   const { data, error } = await supabase
     .from('transportistas')
     .select('*')
@@ -90,6 +99,10 @@ export async function createTransportista(
   profile: Profile
 ) {
   const supabase = await createClient()
+
+  if (!supabase) {
+    throw new Error('Supabase no configurado')
+  }
 
   // Obtener código de sucursal del usuario
   if (!profile.sucursal_id) {
@@ -134,6 +147,10 @@ export async function updateTransportista(
 ) {
   const supabase = await createClient()
 
+  if (!supabase) {
+    throw new Error('Supabase no configurado')
+  }
+
   // Verificar acceso
   const transportista = await getTransportistaById(id, profile)
   if (!transportista) {
@@ -166,6 +183,10 @@ export async function deleteTransportista(id: string, profile: Profile) {
 
   const supabase = await createClient()
 
+  if (!supabase) {
+    throw new Error('Supabase no configurado')
+  }
+
   const { error } = await supabase
     .from('transportistas')
     .delete()
@@ -186,6 +207,10 @@ export async function approveTransportista(id: string, profile: Profile) {
   }
 
   const supabase = await createClient()
+
+  if (!supabase) {
+    throw new Error('Supabase no configurado')
+  }
 
   const { data: updatedTransportista, error } = await supabase
     .from('transportistas')

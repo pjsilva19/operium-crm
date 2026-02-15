@@ -7,7 +7,7 @@ export default async function Topbar() {
   const supabase = await createClient()
 
   let sucursal: Sucursal | null = null
-  if (profile?.sucursal_id) {
+  if (profile?.sucursal_id && supabase) {
     const { data } = await supabase
       .from('sucursales')
       .select('*')
