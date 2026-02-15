@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import type { Sucursal } from '@/lib/supabase/types'
 import Link from 'next/link'
 
 const TIPOS_CAMION = [
@@ -63,7 +64,7 @@ export default function NuevoTransportistaPage() {
         
         // Si no es master y tiene sucursal, establecerla por defecto
         if (profile?.rol !== 'master' && profile?.sucursal_id) {
-          const sucursalUsuario = sucursalesData.find(s => s.id === profile.sucursal_id)
+          const sucursalUsuario = sucursalesData.find((s: Sucursal) => s.id === profile.sucursal_id)
           if (sucursalUsuario) {
             setFormData(prev => ({ ...prev, sucursal_codigo: sucursalUsuario.codigo }))
           }

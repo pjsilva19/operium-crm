@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/auth'
 
+// Force dynamic rendering to avoid build-time errors
+export const dynamic = 'force-dynamic'
+
 export default async function CheckProfilePage() {
   const session = await requireAuth()
   const supabase = await createClient()

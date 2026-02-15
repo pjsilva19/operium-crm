@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
+// Force dynamic rendering to avoid build-time errors
+export const dynamic = 'force-dynamic'
+
 export default async function AutoApprovePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
