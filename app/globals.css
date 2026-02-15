@@ -1,26 +1,80 @@
 @import "tailwindcss";
+@import "mapbox-gl/dist/mapbox-gl.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --sidebar-bg: #0B1B2B;
+  --bg-dark: #0F172A;
+  --accent-orange: #F97316;
+  --text-white: #FFFFFF;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-sidebar: var(--sidebar-bg);
+  --color-bg-dark: var(--bg-dark);
+  --color-accent: var(--accent-orange);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-white);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Ocultar íconos adicionales que puedan aparecer */
+[class*="text-6xl"]::before,
+[class*="text-6xl"]::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Asegurar que los emojis se muestren correctamente sin elementos adicionales */
+.text-6xl {
+  font-variant-emoji: emoji;
+  text-rendering: optimizeLegibility;
+}
+
+/* Mapbox styles */
+.mapboxgl-popup-content {
+  background: var(--bg-dark) !important;
+  color: var(--text-white) !important;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: var(--bg-dark) !important;
+}
+
+/* Eliminar sombras y iconos por defecto de los marcadores */
+.mapboxgl-marker {
+  filter: none !important;
+  box-shadow: none !important;
+  background: none !important;
+}
+
+.mapboxgl-marker svg {
+  display: none !important;
+}
+
+.mapboxgl-marker img {
+  display: none !important;
+}
+
+.mapboxgl-marker div.custom-marker {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Ocultar el icono "I" por defecto de Mapbox */
+.mapboxgl-marker > div:not(.custom-marker) {
+  display: none !important;
 }

@@ -1,36 +1,182 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OPERIUM CRM - Sistema de Logística y Transporte
 
-## Getting Started
+CRM profesional de logística y seguimiento de flotas en tiempo real.
 
-First, run the development server:
+## 🚀 Características
 
+- ✅ Autenticación completa con Supabase Auth
+- ✅ Sistema de aprobación de usuarios (primer usuario = master)
+- ✅ Gestión multisucursal (4 sucursales fijas)
+- ✅ Dashboard con KPIs dinámicos
+- ✅ Módulo completo de viajes (CRUD)
+- ✅ Mapa interactivo con Mapbox GL
+- ✅ Tracking GPS en tiempo real
+- ✅ UI corporativa moderna tipo "control tower"
+
+## 📋 Requisitos Previos
+
+- Node.js 18+ 
+- Cuenta de Supabase
+- Cuenta de Mapbox (para el mapa)
+
+## 🛠️ Instalación
+
+1. **Clonar e instalar dependencias:**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Configurar variables de entorno:**
+Crea un archivo `.env.local` con:
+```env
+NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key_de_supabase
+NEXT_PUBLIC_MAPBOX_TOKEN=tu_token_de_mapbox
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. **Configurar base de datos en Supabase:**
+   - Ve a tu proyecto de Supabase
+   - Abre el SQL Editor
+   - Ejecuta el contenido de `lib/supabase/schema.sql`
+   - Esto creará todas las tablas, políticas RLS y datos iniciales
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. **Ejecutar el proyecto:**
+```bash
+npm run dev
+```
 
-## Learn More
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Estructura del Proyecto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+operium_crm/
+├── app/                    # Next.js App Router
+│   ├── login/             # Página de login
+│   ├── register/          # Página de registro
+│   ├── pending/           # Página de espera de aprobación
+│   ├── dashboard/         # Dashboard principal
+│   ├── viajes/            # Módulo de viajes
+│   ├── usuarios/          # Gestión de usuarios (solo master)
+│   ├── track/             # Tracking GPS público
+│   └── ...
+├── components/            # Componentes React
+│   ├── Sidebar.tsx
+│   ├── Topbar.tsx
+│   ├── KpiCard.tsx
+│   ├── OperationsMap.tsx
+│   └── ...
+├── lib/                   # Utilidades y helpers
+│   ├── supabase/         # Clientes de Supabase
+│   ├── auth.ts           # Helpers de autenticación
+│   ├── kpis.ts           # Cálculo de KPIs
+│   └── utils.ts          # Utilidades generales
+└── middleware.ts         # Middleware de protección de rutas
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔐 Sistema de Autenticación
 
-## Deploy on Vercel
+### Registro
+- Los usuarios se registran con nombre, email y contraseña
+- El **primer usuario** se convierte automáticamente en **master** y queda aprobado
+- Los siguientes usuarios quedan como **pending** hasta ser aprobados
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Roles
+- **master**: Acceso total, puede aprobar usuarios
+- **admin**: Administrador
+- **ops**: Operaciones
+- **sales**: Ventas
+- **founder**: Founder
+- **pending**: Pendiente de aprobación
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Flujo
+1. Usuario se registra → `approved=false`, `rol='pending'`
+2. Redirige a `/pending`
+3. Master aprueba en `/usuarios`
+4. Usuario puede acceder al dashboard
+
+## 🏢 Sucursales
+
+Las 4 sucursales están predefinidas (no editables desde UI):
+- **OPGYE001** - Operaciones Guayaquil
+- **OPUIO001** - Operaciones Quito
+- **OPSIC001** - Operaciones Sierra Centro
+- **OPCOS001** - Operaciones Costa Sur
+
+## 🚛 Módulo de Viajes
+
+- **Estados**: cotizado, asignado, en_ruta, entregado
+- **Campos visibles para todos**: cliente, origen, destino, fecha, estado, tarifa_cliente, notas
+- **Campos solo master**: costo_proveedor, margen, notas_internas
+
+## 📊 KPIs Dinámicos
+
+Los KPIs se calculan dinámicamente desde la base de datos:
+- **Viajes Activos**: estado in ('asignado', 'en_ruta')
+- **Viajes para Hoy**: fecha = hoy (timezone America/Guayaquil)
+- **En Ruta**: estado = 'en_ruta'
+- **Entregados Hoy**: estado = 'entregado' y delivered_at = hoy
+
+## 🗺️ Mapa Mapbox
+
+- Centrado en Ecuador
+- Markers por viaje activo
+- Actualización en tiempo real vía Supabase Realtime
+- Requiere `NEXT_PUBLIC_MAPBOX_TOKEN`
+
+## 📍 Tracking GPS
+
+### Generar token de tracking:
+```typescript
+import { generateTrackingToken } from '@/lib/tracking'
+const token = await generateTrackingToken(tripId)
+const url = `/track/${token}`
+```
+
+### Página pública `/track/[token]`:
+- No requiere autenticación
+- Valida token activo y no expirado
+- Usa `navigator.geolocation.watchPosition`
+- Envía ubicación cada 5 segundos a `trip_locations`
+
+### Dashboard:
+- Suscripción Supabase Realtime a `trip_locations`
+- Mueve markers en tiempo real
+- Muestra última señal, precisión, velocidad
+
+## 🔒 Seguridad
+
+- **Middleware**: Protege todas las rutas excepto `/login`, `/register`, `/track/[token]`
+- **RLS**: Row Level Security en Supabase
+- **Aprobación**: Usuarios no aprobados solo pueden ver `/pending`
+- **Master only**: `/usuarios` solo accesible para master
+
+## 🎨 Diseño
+
+- **Sidebar**: Azul oscuro (#0B1B2B)
+- **Fondo**: Oscuro elegante (#0F172A)
+- **Acento**: Naranja (#F97316)
+- **Cards**: Rounded-2xl
+- **Transiciones**: Suaves y profesionales
+
+## 📝 Notas Importantes
+
+1. **Primer usuario = Master**: El primer usuario registrado se convierte automáticamente en master
+2. **Sucursales fijas**: No se pueden crear/editar desde UI
+3. **KPIs dinámicos**: No hay valores hardcodeados, todo se calcula desde DB
+4. **Tracking tokens**: Expiran en 7 días
+5. **Timezone**: Los cálculos de "hoy" usan America/Guayaquil
+
+## 🚧 Próximas Mejoras
+
+- [ ] Módulo de clientes completo
+- [ ] Módulo de transportistas completo
+- [ ] Geocodificación de direcciones
+- [ ] Notificaciones push
+- [ ] Reportes y exportación
+- [ ] Integración con APIs de transporte
+
+## 📄 Licencia
+
+Privado - OPERIUM
