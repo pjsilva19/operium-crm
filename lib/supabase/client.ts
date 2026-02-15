@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
+import { getSupabaseEnv } from './env'
 
 // Lazy initialization to avoid build-time evaluation
 let clientInstance: ReturnType<typeof createBrowserClient> | null = null
@@ -9,56 +10,40 @@ export function createClient() {
     return clientInstance
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  // During build time, if env vars are not available, provide a mock client
-  // that will fail gracefully when used
-  if (!supabaseUrl || !supabaseAnonKey) {
-    // Only throw in browser - during build this should not be called
-    if (typeof window !== 'undefined') {
-      throw new Error(
-        'Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
-      )
-    }
-    // During build/SSR, return a mock client that will fail gracefully
-    // This prevents build errors while still allowing the page to be marked as dynamic
+  // During build time (SSR), if we're not in the browser, return a mock client
+  // This prevents build errors when Next.js tries to prerender pages
+  if (typeof window === 'undefined') {
+    // Return a mock client that will fail gracefully when used
+    // This allows the build to complete, but the page should be marked as dynamic
     return {
       auth: {
-        getUser: async () => ({ data: { user: null }, error: new Error('Supabase not configured') }),
+        getUser: async () => ({ data: { user: null }, error: new Error('Supabase client not available during build') }),
+        signInWithPassword: async () => ({ data: null, error: new Error('Supabase client not available during build') }),
       },
       from: () => ({
         select: () => ({
           eq: () => ({
-            single: async () => ({ data: null, error: new Error('Supabase not configured') }),
+            single: async () => ({ data: null, error: new Error('Supabase client not available during build') }),
           }),
+          order: () => ({
+            limit: async () => ({ data: null, error: new Error('Supabase client not available during build') }),
+          }),
+        }),
+        insert: async () => ({ data: null, error: new Error('Supabase client not available during build') }),
+        update: () => ({
+          eq: async () => ({ data: null, error: new Error('Supabase client not available during build') }),
         }),
       }),
     } as any
   }
 
-  // Validate URL format before creating client
+  // In browser, validate and create real client
   try {
-    new URL(supabaseUrl)
-  } catch {
-    // Invalid URL format - return mock client
-    if (typeof window !== 'undefined') {
-      throw new Error('Invalid Supabase URL format')
-    }
-    return {
-      auth: {
-        getUser: async () => ({ data: { user: null }, error: new Error('Invalid Supabase URL') }),
-      },
-      from: () => ({
-        select: () => ({
-          eq: () => ({
-            single: async () => ({ data: null, error: new Error('Invalid Supabase URL') }),
-          }),
-        }),
-      }),
-    } as any
+    const { url, key } = getSupabaseEnv()
+    clientInstance = createBrowserClient(url, key)
+    return clientInstance
+  } catch (error: any) {
+    // If validation fails, throw error (this should only happen in browser)
+    throw new Error(`Failed to create Supabase client: ${error.message}`)
   }
-
-  clientInstance = createBrowserClient(supabaseUrl, supabaseAnonKey)
-  return clientInstance
 }

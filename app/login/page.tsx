@@ -12,7 +12,17 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
-  const supabase = createClient()
+  
+  // Lazy initialization: create client only when needed (in event handlers)
+  // This avoids execution during build-time
+  const getSupabase = () => {
+    try {
+      return createClient()
+    } catch (err: any) {
+      setError(`Error de configuración: ${err.message}`)
+      throw err
+    }
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,6 +30,7 @@ export default function LoginPage() {
     setError(null)
 
     try {
+      const supabase = getSupabase()
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
