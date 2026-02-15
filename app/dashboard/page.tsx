@@ -4,6 +4,8 @@ import KpiCard from '@/components/KpiCard'
 import OperationsMap from '@/components/OperationsMap'
 import TripList from '@/components/TripList'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
   const profile = await getProfile()
   const kpis = await getKpis()

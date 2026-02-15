@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { formatDate, formatDateTime } from '@/lib/utils'
 import type { Cliente } from '@/lib/supabase/types'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ClienteDetailPage({ params }: { params: { id: string } }) {
   const { profile } = await requireApprovedUser()
   const supabase = await createClient()

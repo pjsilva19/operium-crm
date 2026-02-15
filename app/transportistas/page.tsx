@@ -4,6 +4,8 @@ import type { Transportista } from '@/lib/supabase/types'
 import Link from 'next/link'
 import DeleteTransportistaButton from '@/components/DeleteTransportistaButton'
 
+export const dynamic = 'force-dynamic'
+
 export default async function TransportistasPage() {
   const { profile } = await requireApprovedUser()
   

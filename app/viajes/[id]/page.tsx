@@ -7,6 +7,8 @@ import Link from 'next/link'
 import DeleteViajeButton from '@/components/DeleteViajeButton'
 import CambiarEstadoButton from '@/components/CambiarEstadoButton'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ViajeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { profile } = await requireApprovedUser()
   const resolvedParams = await params

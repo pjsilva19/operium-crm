@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Logo from '@/components/Logo'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PendingPage() {
   const session = await requireAuth()
   const supabase = await createClient()

@@ -4,6 +4,8 @@ import { formatDate } from '@/lib/utils'
 import type { Profile, Sucursal } from '@/lib/supabase/types'
 import UserManagement from '@/components/UserManagement'
 
+export const dynamic = 'force-dynamic'
+
 export default async function UsuariosPage() {
   await requireMaster()
   const supabase = await createClient()

@@ -3,30 +3,49 @@ import { redirect } from 'next/navigation'
 import type { Profile } from './supabase/types'
 
 export async function getSession() {
-  const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  return session
+  try {
+    const supabase = await createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    return session
+  } catch (error) {
+    // If Supabase is not configured or there's an error, return null
+    // This allows pages to handle the error gracefully
+    console.error('Error getting session:', error)
+    return null
+  }
 }
 
 export async function getUser() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    return user
+  } catch (error) {
+    // If Supabase is not configured or there's an error, return null
+    console.error('Error getting user:', error)
+    return null
+  }
 }
 
 export async function getProfile(): Promise<Profile | null> {
-  const supabase = await createClient()
-  const user = await getUser()
-  
-  if (!user) return null
+  try {
+    const supabase = await createClient()
+    const user = await getUser()
+    
+    if (!user) return null
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
 
-  return profile
+    return profile
+  } catch (error) {
+    // If Supabase is not configured or there's an error, return null
+    console.error('Error getting profile:', error)
+    return null
+  }
 }
 
 export async function requireAuth() {

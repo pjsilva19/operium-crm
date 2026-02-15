@@ -3,6 +3,8 @@ import { getViajes } from '@/lib/viajes'
 import Link from 'next/link'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ViajesPage() {
   const { profile } = await requireApprovedUser()
   const viajes = await getViajes(profile)
