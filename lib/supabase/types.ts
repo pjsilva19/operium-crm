@@ -121,36 +121,3 @@ export type DriverLocation = {
     placa: string | null
   }
 }
-
-export type Viaje = {
-  id: string
-  created_at: string
-  updated_at: string
-  cliente_id: string
-  transportista_id: string | null
-  sucursal_id: string | null
-  origen_direccion: string
-  origen_ciudad: string
-  origen_lat: number | null
-  origen_lng: number | null
-  destino_direccion: string
-  destino_ciudad: string
-  destino_lat: number | null
-  destino_lng: number | null
-  fecha_carga: string
-  fecha_entrega_estimada: string | null
-  fecha_entrega_real: string | null
-  tipo_carga: string | null
-  peso_kg: number | null
-  volumen_m3: number | null
-  pallets: number | null
-  valor_cliente: number
-  costo_transportista: number
-  margen: number
-  estado: 'pendiente' | 'asignado' | 'en_ruta' | 'entregado' | 'cancelado'
-  guia_numero: string | null
-  factura_numero: string | null
-  orden_cliente: string | null
-  observaciones: string | null
-  is_deleted: boolean
-}

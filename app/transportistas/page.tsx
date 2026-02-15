@@ -1,12 +1,13 @@
 import { requireApprovedUser } from '@/lib/auth'
 import { getTransportistas } from '@/lib/transportistas'
+import type { Transportista } from '@/lib/supabase/types'
 import Link from 'next/link'
 import DeleteTransportistaButton from '@/components/DeleteTransportistaButton'
 
 export default async function TransportistasPage() {
   const { profile } = await requireApprovedUser()
   
-  let transportistas = []
+  let transportistas: Transportista[] = []
   try {
     transportistas = await getTransportistas(profile)
   } catch (error: any) {

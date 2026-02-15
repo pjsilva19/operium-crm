@@ -16,7 +16,32 @@ export default function EditarViajePage({ params }: { params: Promise<{ id: stri
   const [viaje, setViaje] = useState<Viaje | null>(null)
   const [viajeId, setViajeId] = useState<string>('')
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    cliente_id: string
+    transportista_id: string
+    origen_direccion: string
+    origen_ciudad: string
+    origen_lat: string
+    origen_lng: string
+    destino_direccion: string
+    destino_ciudad: string
+    destino_lat: string
+    destino_lng: string
+    fecha_carga: string
+    fecha_entrega_estimada: string
+    fecha_entrega_real: string
+    tipo_carga: string
+    peso_kg: string
+    volumen_m3: string
+    pallets: string
+    valor_cliente: string
+    costo_transportista: string
+    estado: 'pendiente' | 'asignado' | 'en_ruta' | 'entregado' | 'cancelado'
+    guia_numero: string
+    factura_numero: string
+    orden_cliente: string
+    observaciones: string
+  }>({
     cliente_id: '',
     transportista_id: '',
     origen_direccion: '',
@@ -36,7 +61,7 @@ export default function EditarViajePage({ params }: { params: Promise<{ id: stri
     pallets: '',
     valor_cliente: '',
     costo_transportista: '',
-    estado: 'pendiente' as const,
+    estado: 'pendiente',
     guia_numero: '',
     factura_numero: '',
     orden_cliente: '',
@@ -351,7 +376,7 @@ export default function EditarViajePage({ params }: { params: Promise<{ id: stri
           <select
             required
             value={formData.estado}
-            onChange={(e) => setFormData({ ...formData, estado: e.target.value as any })}
+            onChange={(e) => setFormData({ ...formData, estado: e.target.value as 'pendiente' | 'asignado' | 'en_ruta' | 'entregado' | 'cancelado' })}
             className="w-full px-4 py-2 bg-slate-950 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#F97316]"
           >
             <option value="pendiente">Pendiente</option>

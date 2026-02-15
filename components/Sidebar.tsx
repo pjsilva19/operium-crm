@@ -18,7 +18,14 @@ export default function Sidebar({ profile, pendientesCount = 0 }: SidebarProps) 
   const [usuariosExpanded, setUsuariosExpanded] = useState(false)
   const [viajesExpanded, setViajesExpanded] = useState(false)
 
-  const menuItems = [
+  type MenuItem = {
+    href: string
+    label: string
+    icon: string
+    badge?: number
+  }
+
+  const menuItems: MenuItem[] = [
     { href: '/dashboard', label: 'Dashboard', icon: '📊' },
   ]
 

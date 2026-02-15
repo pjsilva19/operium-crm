@@ -8,7 +8,7 @@ export async function getKpis(sucursalId?: string | null) {
   const profile = await getProfile()
 
   // Build query based on user role
-  let query = supabase.from('viajes').select('*')
+  let query = supabase.from('viajes').select('*').eq('is_deleted', false)
 
   if (profile?.rol !== 'master') {
     // Non-master users see only their sucursal
@@ -44,19 +44,20 @@ export async function getKpis(sucursalId?: string | null) {
   const todayStr = today.toISOString().split('T')[0]
 
   const viajesActivos = viajes.filter(
-    (v: Viaje) => v.estado === 'asignado' || v.estado === 'en_ruta'
+    (v: Viaje) => !v.is_deleted && (v.estado === 'asignado' || v.estado === 'en_ruta')
   ).length
 
   const viajesHoy = viajes.filter((v: Viaje) => {
-    const fechaStr = typeof v.fecha === 'string' ? v.fecha.split('T')[0] : v.fecha
+    if (v.is_deleted) return false
+    const fechaStr = typeof v.fecha_carga === 'string' ? v.fecha_carga.split('T')[0] : v.fecha_carga
     return fechaStr === todayStr
   }).length
 
-  const enRuta = viajes.filter((v: Viaje) => v.estado === 'en_ruta').length
+  const enRuta = viajes.filter((v: Viaje) => !v.is_deleted && v.estado === 'en_ruta').length
 
   const entregadosHoy = viajes.filter((v: Viaje) => {
-    if (v.estado !== 'entregado') return false
-    const deliveredAt = v.delivered_at || v.updated_at
+    if (v.is_deleted || v.estado !== 'entregado') return false
+    const deliveredAt = v.fecha_entrega_real || v.updated_at
     return deliveredAt && isToday(deliveredAt)
   }).length
 

@@ -90,7 +90,7 @@ export default function RegisterPage() {
       setSuccess(true)
       
       setTimeout(() => {
-        if (isFirstUser) {
+        if (canBeMaster) {
           router.push('/dashboard')
         } else {
           router.push('/pending')
